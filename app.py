@@ -1,27 +1,15 @@
 import telebot
 from config import keys, TOKEN
-from extensions import APIException, ConverterClass, Ending
-
+from extensions import APIException, ConverterClass, Ending, input_values
 
 bot = telebot.TeleBot(TOKEN)
-
-
-# def input_values(message):
-#     values = message.text.split(' ')
-#     if len(values) > 3:
-#         raise APIException('Слишком много параметров')
-#     elif len(values) == 2:
-#         values.append('1')
-#     elif len(values) < 2:
-#         raise APIException('Слишком мало параметров')
-#     return values
 
 
 @bot.message_handler(commands=['start', 'help'])
 def help(message: telebot.types.Message):
     text = 'Чтобы начать работу введите команду боту в следующем формате:\n<имя валюты> \
 <в какую валюту перевести>\nТретим аргументом можно указать <количество переводимой валюты> \
-\nНапример "доллар рубль 125"\nУвидеть список всех валют: /values'
+\nНапример "доллар рубль 125"\n\nУвидеть список всех валют: /values'
     bot.reply_to(message, text)
 
 
@@ -29,23 +17,16 @@ def help(message: telebot.types.Message):
 def values(message: telebot.types.Message):
     text = 'Доступные валюты:'
     for key in keys.keys():
-        text = '\n'.join((text, key, ))
+        text = '\n'.join((text, key,))
     bot.reply_to(message, text)
 
 
 @bot.message_handler(content_types=['text', ])
 def converter(message: telebot.types.Message):
     try:
-        # input_values(message)
-        values = message.text.split(' ')
-        if len(values) > 3:
-            raise APIException('Слишком много параметров')
-        elif len(values) == 2:
-            values.append('1')
-        elif len(values) < 2:
-            raise APIException('Слишком мало параметров')
+        values = input_values(message)
         quote, base, amount = values
-        total_base = ConverterClass.get_price(quote, base, amount)
+        total_base = str(ConverterClass.get_price(quote, base, amount)).rstrip('0').rstrip('.')
     except APIException as e:
         bot.reply_to(message, f'Ошибка пользователя:\n{e}')
 
