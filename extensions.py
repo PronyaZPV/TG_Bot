@@ -49,7 +49,7 @@ class Ending:
             else:
                 quote += 'a'
 
-        if quote == 'рубль':
+        if quote == 'рубль' or quote == 'юань':
             if int(int(amount)) % 10 != 1 or int(int(amount)) == 11:
                 quote = quote[:-1] + 'ей'
             else:
@@ -62,7 +62,7 @@ class Ending:
         if base == 'доллар':
             base += 'ах'
 
-        if base == 'рубль':
+        if base == 'рубль' or base == 'юань':
             base = base[:-1] + 'ях'
 
         if base in crypto:
@@ -79,4 +79,5 @@ def input_values(message):
         values.append('1')  # в таком случае количество принимается за 1
     elif len(values) < 2:
         raise APIException('Слишком мало параметров')
+    values = list(map(str.lower, values))
     return values
